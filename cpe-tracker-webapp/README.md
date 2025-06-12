@@ -5,7 +5,7 @@ I've built a centralized web application for the support team to track CPE devic
 
 Architecture Overview
 
-- **Frontend:** HTML/CSS/JS (hosted on S3, styled like Adaptiv's branding)
+- **Frontend:** HTML/CSS/JS (hosted on S3)
 - **API Layer:** AWS API Gateway (HTTP routes)
 - **Backend:** Python-based AWS Lambda functions (via zip files)
 - **Database:** Amazon DynamoDB for storing incident data
