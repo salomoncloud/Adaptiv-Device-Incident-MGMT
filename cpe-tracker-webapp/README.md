@@ -29,6 +29,10 @@ Configure Terraform Cloud:
 
 Connect this repo to Terraform Cloud
 Add the following workspace variables and set value as sensitive and terraform environment variables (that way anything sensitive gets saved securely and remotely rather than in code):
+
+![image](https://github.com/user-attachments/assets/d0b2a0dc-1bcf-411b-b9e0-4cd1927b8a51)
+
+
 | Name                    | Value               |
 | ----------------------- | ------------------- |
 | `aws_access_key_id`     | Your AWS access key |
@@ -41,6 +45,11 @@ Go to Terraform Cloud and run a plan + apply
 After deployment, Terraform will output:
 api_endpoint — for backend API calls (used in frontend app.js)
 website_url — where your HTML/CSS/JS app is hosted
+
+![image](https://github.com/user-attachments/assets/06f7dd26-14fd-4d4a-bd7e-f2e692d11dbd)
+
+![image](https://github.com/user-attachments/assets/3907fa7f-80e5-4d7b-949c-e5f65cddaf58)
+
 
 API Routes:
 | Route         | Method | Description                             |
