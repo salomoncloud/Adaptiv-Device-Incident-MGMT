@@ -10,8 +10,8 @@ Architecture Overview
 - **Backend:** Python-based AWS Lambda functions (via zip files)
 - **Database:** Amazon DynamoDB for storing incident data
 - **Authentication:** Amazon Cognito User Pool (shared login)
-- **Automation:** EventBridge scheduled check for recurring incidents
-- **Infrastructure-as-Code:** Terraform (modular, stored in GitHub and deployed via Terraform Cloud)
+- **Automation:** EventBridge scheduled check for recurring incidents --- Would need to be set up later on
+- **Infrastructure-as-Code:** Terraform (modular, stored in GitHub and deployed via Terraform Cloud --- Terraform Cloud handles the remote state)
 
 ---
 
@@ -28,14 +28,14 @@ Features
 Configure Terraform Cloud:
 
 Connect this repo to Terraform Cloud
-Add the following workspace variables (all sensitive except aws_region):
+Add the following workspace variables and set value as sensitive and terraform environment variables (that way anything sensitive gets saved securely and remotely rather than in code):
 | Name                    | Value               |
 | ----------------------- | ------------------- |
 | `aws_access_key_id`     | Your AWS access key |
 | `aws_secret_access_key` | Your AWS secret     |
 | `shared_password`       | (Set securely)      |
 
-Deploy Infrastructure
+Deploy Infrastructure:
 Go to Terraform Cloud and run a plan + apply
 
 After deployment, Terraform will output:
@@ -55,7 +55,7 @@ Shared username: Adaptiv_user
 Password: (Stored in Terraform Cloud)
 
 Notes ---
-Slack alert correlation logic is planned but not yet deployed
+Slack alert correlation logic can be planned
 The system is modular and extensible for additional views, dashboards, or integrations
 
 Future Enhancements ---
