@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CPE Incident Tracker</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="container">
+    <h1>Device Incident Tracker</h1>
+    <form id="incidentForm">
+      <label>Device Type</label>
+      <input type="text" name="cpe_type" placeholder="ex: E40, E80, etc" />
+
+      <label>Network ID (includes serial)</label>
+      <input type="text" name="network_id" placeholder="ex: 1164 | 220S101F4" />
+
+      <label>Site Name</label>
+      <input type="text" name="site_name" placeholder="ex: Toronto DC" />
+
+      <label>Partner Name</label>
+      <input type="text" name="partner_name" placeholder="ex: PartnerX" />
+
+      <label>Customer Name</label>
+      <input type="text" name="customer_name" placeholder="ex: XYZ Corp" />
+
+      <label>Detected At</label>
+      <input type="datetime-local" name="detected_at" />
+
+      <label>Resolved At</label>
+      <input type="datetime-local" name="resolved_at" />
+
+      <label>Cause</label>
+      <input type="text" name="cause" placeholder="ex: Power outage" />
+
+      <label>Fix</label>
+      <input type="text" name="fix" placeholder="ex: Rebooted modem" />
+
+      <label>Freshservice Ticket #</label>
+      <input type="text" name="freshservice_ticket" placeholder="ex: INC-1234" />
+
+      <label>Resolved By</label>
+      <input type="text" name="resolved_by" placeholder="ex: John Doe" />
+
+      <label>Resolution Notes</label>
+      <textarea name="resolution_notes" rows="4" placeholder="What was done? Observations? Fix applied?"></textarea>
+
+      <button type="submit">Submit Incident</button>
+    </form>
+    <hr style="margin: 3rem 0;" />
+
+<h2>Recurring Offender Check</h2>
+<div class="lookup-section">
+  <input type="text" id="lookupSerial" placeholder="Enter Serial Number (ex: 220S101F4)" />
+  <button onclick="lookupSerial()">Search</button>
+</div>
+
+<div id="lookupResult" class="result-box"></div>
+
+<h2 style="margin-top: 3rem;">All Incidents Logged</h2>
+<div id="incidentTableContainer"></div>
+
+<button onclick="exportCSV()">📤 Export CSV</button>
+
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

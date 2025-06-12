@@ -1,0 +1,56 @@
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.0"
+    }
+  }
+}
+
+provider "aws" {
+  region = var.aws_region
+  access_key = var.aws_access_key_id
+  secret_key = var.aws_secret_access_key
+}
+
+module "cognito" {
+  source = "./modules/cognito"
+  user_pool_name = "cpe-tracker-users"
+  shared_username = var.shared_username
+  shared_password = var.shared_password
+}
+
+module "dynamodb" {
+  source = "./modules/dynamodb"
+  devices_table_name  = var.devices_table_name
+  incidents_table_name = var.incidents_table_name
+}
+
+module "lambda" {
+  source = "./modules/lambda"
+  region = var.aws_region
+  incident_function_name = var.incident_function_name
+  recurring_function_name = var.recurring_function_name
+}
+
+module "api_gateway" {
+  source = "./modules/api_gateway"
+  api_name = var.api_name
+
+  create_incident_function_arn = module.lambda.create_incident_function_arn
+  get_recurring_function_arn   = module.lambda.recurring_offender_function_arn
+  get_all_incidents_function_arn = module.lambda.get_all_incidents_function_arn
+  export_csv_function_arn         = module.lambda.export_csv_function_arn
+}
+
+
+
+module "s3_frontend" {
+  source = "./modules/s3_frontend"
+  bucket_name = var.frontend_bucket_name
+}
+
+module "eventbridge" {
+  source = "./modules/eventbridge"
+  recurring_function_arn = module.lambda.recurring_offender_function_arn
+}
