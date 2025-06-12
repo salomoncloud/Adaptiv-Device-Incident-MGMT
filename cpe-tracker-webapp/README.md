@@ -1,7 +1,7 @@
 Project Summary
 ---
 
-I'm building a centralized web application for the support team to track CPE device incidents (E40, E60, etc.), including outage times, troubleshooting notes, and recurring issues. The application is designed to be simple, team-accessible, and cloud-native, deployed on AWS using Terraform, with future integrations planned (like Slack alert checks).
+I've built a centralized web application for the support team to track CPE device incidents (E40, E60, etc.), including outage times, troubleshooting notes, and recurring issues. The application is designed to be simple, team-accessible, and cloud-native, deployed on AWS using Terraform, with future integrations planned (like Slack alert checks).
 
 Architecture Overview
 
