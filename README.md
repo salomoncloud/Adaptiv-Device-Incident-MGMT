@@ -39,8 +39,7 @@ Add the following workspace variables and set value as sensitive and terraform e
 | `aws_secret_access_key` | Your AWS secret     |
 | `shared_password`       | (Set securely)      |
 
-Note - its important to set the working directory in the settings of terraform as terraform/
-![image](https://github.com/user-attachments/assets/2e2d66e4-4792-4c3f-8200-723bb74e02e8)
+Note - its important to set the working directory properly - for example, this set up would require you to set the working directory in terraform as cpe-tracker-webapp/terraform/
 
 Deploy Infrastructure:
 Go to Terraform Cloud and run a plan + apply
