@@ -44,6 +44,8 @@ Note - its important to set the working directory properly - for example, this s
 Deploy Infrastructure:
 Go to Terraform Cloud and run a plan + apply
 
+![image](https://github.com/user-attachments/assets/d8e8e07e-ab7c-4b9c-8b7a-e623f03279cc)
+
 After deployment, Terraform will output:
 api_endpoint — for backend API calls (used in frontend app.js)
 website_url — where your HTML/CSS/JS app is hosted
