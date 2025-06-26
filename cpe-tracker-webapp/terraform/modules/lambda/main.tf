@@ -12,6 +12,28 @@ resource "aws_iam_role" "lambda_exec" {
   })
 }
 
+resource "aws_iam_policy" "dynamodb_access" {
+  name = "lambda_dynamodb_access"
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect = "Allow"
+      Action = [
+        "dynamodb:PutItem",
+        "dynamodb:GetItem",
+        "dynamodb:Scan",
+        "dynamodb:Query",
+        "dynamodb:UpdateItem",
+        "dynamodb:DeleteItem"
+      ]
+      Resource = [
+        "arn:aws:dynamodb:${var.region}:*:table/${var.devices_table_name}",
+        "arn:aws:dynamodb:${var.region}:*:table/${var.incidents_table_name}"
+      ]
+    }]
+  })
+}
+
 resource "aws_iam_policy_attachment" "lambda_basic" {
   name       = "lambda_basic_attach"
   roles      = [aws_iam_role.lambda_exec.name]
