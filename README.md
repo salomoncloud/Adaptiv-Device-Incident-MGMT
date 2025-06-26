@@ -39,6 +39,10 @@ Add the following workspace variables and set value as sensitive and terraform e
 | `aws_secret_access_key` | Your AWS secret     |
 | `shared_password`       | (Set securely)      |
 
+Note - its important to set the working directory in the settings of terraform as /terraform
+![image](https://github.com/user-attachments/assets/6696ea4f-cfed-423b-9ac9-5d9361613d44)
+
+
 Deploy Infrastructure:
 Go to Terraform Cloud and run a plan + apply
 
