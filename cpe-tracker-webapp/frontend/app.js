@@ -1,5 +1,5 @@
 // Configuration - this will be updated after Terraform deployment
-const API_BASE_URL = 'API_ENDPOINT_PLACEHOLDER';
+const API_BASE_URL = '${API_ENDPOINT_PLACEHOLDER}';
 
 const form = document.getElementById("incidentForm");
 
