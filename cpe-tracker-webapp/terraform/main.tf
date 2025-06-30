@@ -55,6 +55,7 @@ module "api_gateway" {
 module "s3_frontend" {
   source = "./modules/s3_frontend"
   bucket_name = var.frontend_bucket_name
+  api_endpoint = module.api_gateway.api_endpoint  # Add this line
 }
 
 module "eventbridge" {
