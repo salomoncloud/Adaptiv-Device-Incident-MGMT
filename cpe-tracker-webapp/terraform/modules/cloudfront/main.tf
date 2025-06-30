@@ -1,3 +1,13 @@
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.0"
+      configuration_aliases = [aws.us_east_1]
+    }
+  }
+}
+
 # ACM Certificate for CloudFront (must be in us-east-1)
 resource "aws_acm_certificate" "cloudfront_cert" {
   provider          = aws.us_east_1
@@ -176,6 +186,31 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
   }
 
   depends_on = [aws_acm_certificate_validation.cloudfront_cert]
+}
+
+# S3 Bucket Policy (managed here to avoid circular dependency)
+resource "aws_s3_bucket_policy" "frontend" {
+  bucket = var.bucket_name
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [{
+      Sid       = "AllowCloudFrontServicePrincipal",
+      Effect    = "Allow",
+      Principal = {
+        Service = "cloudfront.amazonaws.com"
+      },
+      Action   = "s3:GetObject",
+      Resource = "arn:aws:s3:::${var.bucket_name}/*",
+      Condition = {
+        StringEquals = {
+          "AWS:SourceArn" = aws_cloudfront_distribution.s3_distribution.arn
+        }
+      }
+    }]
+  })
+
+  depends_on = [aws_cloudfront_distribution.s3_distribution]
 }
 
 # Route 53 records pointing to CloudFront
