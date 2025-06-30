@@ -31,6 +31,8 @@ module "lambda" {
   region = var.aws_region
   incident_function_name = var.incident_function_name
   recurring_function_name = var.recurring_function_name
+  devices_table_name = var.devices_table_name
+  incidents_table_name = var.incidents_table_name
 }
 
 module "api_gateway" {
@@ -38,12 +40,17 @@ module "api_gateway" {
   api_name = var.api_name
 
   create_incident_function_arn = module.lambda.create_incident_function_arn
+  create_incident_function_name = var.incident_function_name
+  
   get_recurring_function_arn   = module.lambda.recurring_offender_function_arn
+  get_recurring_function_name  = var.recurring_function_name
+  
   get_all_incidents_function_arn = module.lambda.get_all_incidents_function_arn
-  export_csv_function_arn         = module.lambda.export_csv_function_arn
+  get_all_incidents_function_name = "get-all-incidents"
+  
+  export_csv_function_arn = module.lambda.export_csv_function_arn
+  export_csv_function_name = "export-csv"
 }
-
-
 
 module "s3_frontend" {
   source = "./modules/s3_frontend"
