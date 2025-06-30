@@ -74,7 +74,7 @@ resource "aws_lambda_function" "create_incident" {
   role          = aws_iam_role.lambda_exec.arn
   handler       = "handler.lambda_handler"
   runtime       = "python3.11"
-  filename      = "${path.module}/../../backend/create_incident.zip"
+  filename      = "${path.root}/../backend/create_incident.zip"
   timeout       = 10
 
   environment {
@@ -84,8 +84,7 @@ resource "aws_lambda_function" "create_incident" {
     }
   }
 
-  # Update function if ZIP file changes
-  source_code_hash = filebase64sha256("${path.module}/../../backend/create_incident.zip")
+  source_code_hash = filebase64sha256("${path.root}/../backend/create_incident.zip")
 }
 
 # Lambda function: Get Recurring Incidents
@@ -96,7 +95,7 @@ resource "aws_lambda_function" "recurring_offender" {
   role          = aws_iam_role.lambda_exec.arn
   handler       = "handler.lambda_handler"
   runtime       = "python3.11"
-  filename      = "${path.module}/../../backend/get_recurring.zip"
+  filename      = "${path.root}/../backend/get_recurring.zip"
   timeout       = 10
 
   environment {
@@ -106,7 +105,7 @@ resource "aws_lambda_function" "recurring_offender" {
     }
   }
 
-  source_code_hash = filebase64sha256("${path.module}/../../backend/get_recurring.zip")
+  source_code_hash = filebase64sha256("${path.root}/../backend/get_recurring.zip")
 }
 
 # Lambda function: Get All Incidents
@@ -117,7 +116,7 @@ resource "aws_lambda_function" "get_all_incidents" {
   role          = aws_iam_role.lambda_exec.arn
   handler       = "handler.lambda_handler"
   runtime       = "python3.11"
-  filename      = "${path.module}/../../backend/get_all_incidents.zip"
+  filename      = "${path.root}/../backend/get_all_incidents.zip"
   timeout       = 10
 
   environment {
@@ -126,7 +125,7 @@ resource "aws_lambda_function" "get_all_incidents" {
     }
   }
 
-  source_code_hash = filebase64sha256("${path.module}/../../backend/get_all_incidents.zip")
+  source_code_hash = filebase64sha256("${path.root}/../backend/get_all_incidents.zip")
 }
 
 # Lambda function: Export CSV
@@ -137,7 +136,7 @@ resource "aws_lambda_function" "export_csv" {
   role          = aws_iam_role.lambda_exec.arn
   handler       = "handler.lambda_handler"
   runtime       = "python3.11"
-  filename      = "${path.module}/../../backend/export_csv.zip"
+  filename      = "${path.root}/../backend/export_csv.zip"
   timeout       = 10
 
   environment {
@@ -146,5 +145,5 @@ resource "aws_lambda_function" "export_csv" {
     }
   }
 
-  source_code_hash = filebase64sha256("${path.module}/../../backend/export_csv.zip")
+  source_code_hash = filebase64sha256("${path.root}/../backend/export_csv.zip")
 }
