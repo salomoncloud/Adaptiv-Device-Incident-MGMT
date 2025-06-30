@@ -1,652 +1,79 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CPE Incident Tracker - Architecture Overview</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+Project Summary
+---
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: #333;
-            overflow-x: hidden;
-        }
+I've built a centralized web application for the support team to track CPE device incidents (E40, E60, etc.), including outage times, troubleshooting notes, and recurring issues. The application is designed to be simple, team-accessible, and cloud-native, deployed on AWS using Terraform, with future integrations planned (like Slack alert checks).
 
-        .presentation-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
+Architecture Overview
 
-        .slide {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            margin-bottom: 40px;
-            padding: 40px;
-            position: relative;
-            overflow: hidden;
-            animation: slideIn 0.6s ease-out;
-        }
+- **Frontend:** HTML/CSS/JS (hosted on S3)
+- **API Layer:** AWS API Gateway (HTTP routes)
+- **Backend:** Python-based AWS Lambda functions (via zip files)
+- **Database:** Amazon DynamoDB for storing incident data
+- **Authentication:** Amazon Cognito User Pool (shared login)
+- **Automation:** EventBridge scheduled check for recurring incidents --- Would need to be set up later on
+- **Infrastructure-as-Code:** Terraform (modular, stored in GitHub and deployed via Terraform Cloud --- Terraform Cloud handles the remote state)
 
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
+---
 
-        .slide::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 5px;
-            background: linear-gradient(90deg, #003e73, #af8701);
-        }
+Features
 
-        h1 {
-            font-size: 2.5em;
-            color: #003e73;
-            margin-bottom: 20px;
-            text-align: center;
-            position: relative;
-        }
+- Submit incident reports (CPE info, root cause, fix, etc.)
+- Lookup recurring issues by serial number
+- View all logged incidents in a table
+- Export incidents to CSV
+- Daily automation (EventBridge + Lambda) to flag repeat offenders
 
-        h2 {
-            font-size: 2em;
-            color: #003e73;
-            margin-bottom: 25px;
-            border-bottom: 2px solid #af8701;
-            padding-bottom: 10px;
-        }
+---
 
-        h3 {
-            font-size: 1.4em;
-            color: #af8701;
-            margin: 20px 0 15px 0;
-        }
+Configure Terraform Cloud:
 
-        .architecture-diagram {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 30px;
-            margin: 30px 0;
-            align-items: start;
-        }
+Connect this repo to Terraform Cloud
+Add the following workspace variables and set value as sensitive and terraform environment variables (that way anything sensitive gets saved securely and remotely rather than in code):
 
-        .layer {
-            background: linear-gradient(145deg, #f8f9fa, #e9ecef);
-            border-radius: 15px;
-            padding: 25px;
-            text-align: center;
-            border: 2px solid #dee2e6;
-            transition: all 0.3s ease;
-            position: relative;
-        }
+![image](https://github.com/user-attachments/assets/d0b2a0dc-1bcf-411b-b9e0-4cd1927b8a51)
 
-        .layer:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
-            border-color: #af8701;
-        }
 
-        .layer-title {
-            font-weight: bold;
-            color: #003e73;
-            font-size: 1.2em;
-            margin-bottom: 15px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
+| Name                    | Value               |
+| ----------------------- | ------------------- |
+| `aws_access_key_id`     | Your AWS access key |
+| `aws_secret_access_key` | Your AWS secret     |
+| `shared_password`       | (Set securely)      |
 
-        .component {
-            background: white;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 12px;
-            margin: 10px 0;
-            font-size: 0.9em;
-            transition: all 0.2s ease;
-        }
+Note - its important to set the working directory properly - for example, this set up would require you to set the working directory in terraform as cpe-tracker-webapp/terraform/
 
-        .component:hover {
-            background: #f0f8ff;
-            border-color: #003e73;
-        }
+Deploy Infrastructure:
+Go to Terraform Cloud and run a plan + apply
 
-        .aws-service {
-            background: linear-gradient(135deg, #ff9a00, #ffad33);
-            color: white;
-        }
+![image](https://github.com/user-attachments/assets/d8e8e07e-ab7c-4b9c-8b7a-e623f03279cc)
 
-        .frontend-component {
-            background: linear-gradient(135deg, #4285f4, #66a6ff);
-            color: white;
-        }
+After deployment, Terraform will output:
+api_endpoint — for backend API calls (used in frontend app.js)
+website_url — where your HTML/CSS/JS app is hosted
 
-        .flow-arrow {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2em;
-            color: #af8701;
-            margin: 20px 0;
-        }
+![image](https://github.com/user-attachments/assets/06f7dd26-14fd-4d4a-bd7e-f2e692d11dbd)
 
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin: 25px 0;
-        }
+![image](https://github.com/user-attachments/assets/3907fa7f-80e5-4d7b-949c-e5f65cddaf58)
 
-        .feature-card {
-            background: linear-gradient(145deg, #e3f2fd, #bbdefb);
-            border-radius: 12px;
-            padding: 20px;
-            text-align: center;
-            border-left: 4px solid #003e73;
-        }
 
-        .feature-icon {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-        }
+API Routes:
+| Route         | Method | Description                             |
+| ------------- | ------ | --------------------------------------- |
+| `/incident`   | POST   | Submits a new CPE incident              |
+| `/recurring`  | GET    | Returns incident count by serial number |
+| `/incidents`  | GET    | Returns all incidents as JSON           |
+| `/export-csv` | GET    | Downloads all incidents as CSV          |
 
-        .api-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
+Auth Info (Internal Use)
+Shared username: Adaptiv_user
+Password: (Stored in Terraform Cloud)
 
-        .api-table th {
-            background: #003e73;
-            color: white;
-            padding: 15px;
-            text-align: left;
-            font-weight: 600;
-        }
+Notes ---
+Slack alert correlation logic can be planned
+The system is modular and extensible for additional views, dashboards, or integrations
 
-        .api-table td {
-            padding: 12px 15px;
-            border-bottom: 1px solid #eee;
-        }
+Future Enhancements ---
+Slack integration for live recurring offender analysis
+Partner/client dashboards
+SMS/email alerting via SNS
 
-        .api-table tr:nth-child(even) {
-            background: #f8f9fa;
-        }
-
-        .api-table tr:hover {
-            background: #e3f2fd;
-        }
-
-        .method-badge {
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 0.8em;
-            font-weight: bold;
-            color: white;
-        }
-
-        .method-post { background: #28a745; }
-        .method-get { background: #007bff; }
-
-        .deployment-steps {
-            counter-reset: step-counter;
-        }
-
-        .step {
-            counter-increment: step-counter;
-            margin: 20px 0;
-            padding: 20px;
-            background: linear-gradient(145deg, #fff3cd, #ffeaa7);
-            border-radius: 10px;
-            position: relative;
-            padding-left: 60px;
-        }
-
-        .step::before {
-            content: counter(step-counter);
-            position: absolute;
-            left: 20px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: #af8701;
-            color: white;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-        }
-
-        .security-info {
-            background: linear-gradient(145deg, #d4edda, #c3e6cb);
-            border-left: 4px solid #28a745;
-            padding: 20px;
-            border-radius: 8px;
-            margin: 20px 0;
-        }
-
-        .warning {
-            background: linear-gradient(145deg, #fff3cd, #ffeaa7);
-            border-left: 4px solid #ffc107;
-            padding: 20px;
-            border-radius: 8px;
-            margin: 20px 0;
-        }
-
-        .tech-stack {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            justify-content: center;
-            margin: 25px 0;
-        }
-
-        .tech-badge {
-            background: linear-gradient(145deg, #003e73, #2c5282);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 25px;
-            font-weight: 500;
-            transition: transform 0.2s ease;
-        }
-
-        .tech-badge:hover {
-            transform: scale(1.1);
-        }
-
-        @media (max-width: 768px) {
-            .architecture-diagram {
-                grid-template-columns: 1fr;
-            }
-            
-            .slide {
-                padding: 20px;
-            }
-            
-            h1 {
-                font-size: 2em;
-            }
-            
-            h2 {
-                font-size: 1.5em;
-            }
-        }
-    </style>
-</head>
-<body>
-    <div class="presentation-container">
-        <!-- Title Slide -->
-        <div class="slide">
-            <h1>🔧 CPE Device Incident Tracker</h1>
-            <div style="text-align: center; margin: 40px 0;">
-                <p style="font-size: 1.3em; color: #666; margin-bottom: 20px;">
-                    <strong>Architecture Overview for Network Support Engineers</strong>
-                </p>
-                <p style="font-size: 1.1em; color: #888;">
-                    Built by Salomon Fritz Lubin for Adaptiv Networks
-                </p>
-            </div>
-            
-            <div class="tech-stack">
-                <span class="tech-badge">AWS Cloud</span>
-                <span class="tech-badge">Terraform</span>
-                <span class="tech-badge">Python Lambda</span>
-                <span class="tech-badge">DynamoDB</span>
-                <span class="tech-badge">CloudFront</span>
-                <span class="tech-badge">API Gateway</span>
-            </div>
-        </div>
-
-        <!-- What Is This Application -->
-        <div class="slide">
-            <h2>🎯 What Is This Application?</h2>
-            <p style="font-size: 1.2em; margin-bottom: 25px; color: #555;">
-                A centralized web application designed specifically for our support team to efficiently track and manage CPE device incidents (E40, E60, etc.)
-            </p>
-            
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon">📝</div>
-                    <h3>Submit Incidents</h3>
-                    <p>Log CPE device issues with detailed information including outage times, troubleshooting notes, and resolution details</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">🔍</div>
-                    <h3>Lookup Recurring Issues</h3>
-                    <p>Quickly identify repeat offenders by searching device serial numbers</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">📊</div>
-                    <h3>View All Incidents</h3>
-                    <p>Browse complete incident history in an organized table format</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">📤</div>
-                    <h3>Export Data</h3>
-                    <p>Download incident reports as CSV files for analysis and reporting</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Architecture Overview -->
-        <div class="slide">
-            <h2>🏗️ System Architecture</h2>
-            <p style="font-size: 1.1em; margin-bottom: 30px; color: #555;">
-                The application follows a modern, cloud-native, serverless architecture hosted entirely on AWS
-            </p>
-            
-            <div class="architecture-diagram">
-                <div class="layer">
-                    <div class="layer-title">Frontend Layer</div>
-                    <div class="component frontend-component">HTML/CSS/JavaScript</div>
-                    <div class="component frontend-component">Hosted on S3</div>
-                    <div class="component frontend-component">Delivered via CloudFront CDN</div>
-                    <div class="component frontend-component">Custom Domain (adaptiv-device-tracker.ca)</div>
-                </div>
-                
-                <div class="layer">
-                    <div class="layer-title">API Layer</div>
-                    <div class="component aws-service">AWS API Gateway</div>
-                    <div class="component aws-service">HTTP REST Routes</div>
-                    <div class="component aws-service">CORS Enabled</div>
-                    <div class="component aws-service">Lambda Integration</div>
-                </div>
-                
-                <div class="layer">
-                    <div class="layer-title">Backend Layer</div>
-                    <div class="component aws-service">Python Lambda Functions</div>
-                    <div class="component aws-service">DynamoDB Database</div>
-                    <div class="component aws-service">Cognito Authentication</div>
-                    <div class="component aws-service">EventBridge Automation</div>
-                </div>
-            </div>
-            
-            <div class="flow-arrow">
-                User → CloudFront → S3 Frontend → API Gateway → Lambda → DynamoDB
-            </div>
-        </div>
-
-        <!-- API Endpoints -->
-        <div class="slide">
-            <h2>🔌 API Endpoints</h2>
-            <p style="margin-bottom: 20px; color: #555;">
-                The application provides these REST API endpoints for different operations:
-            </p>
-            
-            <table class="api-table">
-                <thead>
-                    <tr>
-                        <th>Route</th>
-                        <th>Method</th>
-                        <th>Description</th>
-                        <th>Lambda Function</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><code>/incident</code></td>
-                        <td><span class="method-badge method-post">POST</span></td>
-                        <td>Submit a new CPE incident report</td>
-                        <td>create_incident</td>
-                    </tr>
-                    <tr>
-                        <td><code>/recurring</code></td>
-                        <td><span class="method-badge method-get">GET</span></td>
-                        <td>Get incident count by serial number (past 12 months)</td>
-                        <td>get_recurring</td>
-                    </tr>
-                    <tr>
-                        <td><code>/incidents</code></td>
-                        <td><span class="method-badge method-get">GET</span></td>
-                        <td>Retrieve all incidents as JSON</td>
-                        <td>get_all_incidents</td>
-                    </tr>
-                    <tr>
-                        <td><code>/export-csv</code></td>
-                        <td><span class="method-badge method-get">GET</span></td>
-                        <td>Download all incidents as CSV file</td>
-                        <td>export_csv</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <!-- Data Flow -->
-        <div class="slide">
-            <h2>🔄 How Data Flows</h2>
-            
-            <h3>When You Submit an Incident:</h3>
-            <div class="step">
-                <strong>Fill Out Form:</strong> Enter device info, site name, partner, customer, detected/resolved times, cause, fix, Freshservice ticket, etc.
-            </div>
-            <div class="step">
-                <strong>Frontend Processing:</strong> JavaScript extracts serial number from Network ID field (format: "1164 | 220S101F4")
-            </div>
-            <div class="step">
-                <strong>API Call:</strong> Data sent to API Gateway POST /incident endpoint
-            </div>
-            <div class="step">
-                <strong>Lambda Processing:</strong> create_incident function generates unique ID and stores in DynamoDB
-            </div>
-            <div class="step">
-                <strong>Database Storage:</strong> Incident stored in cpe_incidents table with timestamp
-            </div>
-            
-            <h3>When You Look Up Recurring Issues:</h3>
-            <div class="step">
-                <strong>Enter Serial Number:</strong> Type device serial (e.g., "220S101F4")
-            </div>
-            <div class="step">
-                <strong>API Query:</strong> GET /recurring?serial_number=220S101F4
-            </div>
-            <div class="step">
-                <strong>Database Scan:</strong> Lambda searches all incidents for that serial in past 12 months
-            </div>
-            <div class="step">
-                <strong>Results Display:</strong> Shows count and list of recent incidents for that device
-            </div>
-        </div>
-
-        <!-- Security & Access -->
-        <div class="slide">
-            <h2>🔐 Security & Access</h2>
-            
-            <div class="security-info">
-                <h3>🔑 Authentication</h3>
-                <p><strong>Shared Login Credentials:</strong></p>
-                <ul style="margin: 10px 0 0 20px;">
-                    <li>Username: <code>Adaptiv_user</code></li>
-                    <li>Password: Stored securely in Terraform Cloud</li>
-                    <li>Managed via AWS Cognito User Pool</li>
-                </ul>
-            </div>
-            
-            <div class="security-info">
-                <h3>🛡️ Infrastructure Security</h3>
-                <ul style="margin: 10px 0 0 20px;">
-                    <li>All traffic encrypted with HTTPS/TLS</li>
-                    <li>AWS IAM roles with least-privilege access</li>
-                    <li>Private VPC networking for backend components</li>
-                    <li>CloudFront provides DDoS protection</li>
-                </ul>
-            </div>
-            
-            <div class="warning">
-                <h3>⚠️ Important Notes</h3>
-                <ul style="margin: 10px 0 0 20px;">
-                    <li>This is an internal tool - not exposed to customers</li>
-                    <li>All sensitive data stays within Adaptiv's AWS environment</li>
-                    <li>Regular backups handled automatically by DynamoDB</li>
-                </ul>
-            </div>
-        </div>
-
-        <!-- Deployment & Infrastructure -->
-        <div class="slide">
-            <h2>🚀 Deployment & Infrastructure</h2>
-            
-            <h3>Infrastructure as Code with Terraform</h3>
-            <p style="margin-bottom: 20px; color: #555;">
-                Everything is defined in code and deployed automatically - no manual AWS console clicking!
-            </p>
-            
-            <div class="deployment-steps">
-                <div class="step">
-                    <strong>Code Repository:</strong> All infrastructure defined in Terraform files stored in GitHub
-                </div>
-                <div class="step">
-                    <strong>Terraform Cloud:</strong> Handles remote state management and deployment automation
-                </div>
-                <div class="step">
-                    <strong>AWS Resources:</strong> Creates all necessary AWS services (Lambda, DynamoDB, S3, CloudFront, etc.)
-                </div>
-                <div class="step">
-                    <strong>Domain Setup:</strong> Configures custom domain with SSL certificate
-                </div>
-                <div class="step">
-                    <strong>Frontend Deployment:</strong> Uploads HTML/CSS/JS files to S3 and configures CloudFront distribution
-                </div>
-            </div>
-            
-            <div class="security-info">
-                <h3>🔧 Easy Updates</h3>
-                <p>When code changes are needed, simply update the repository and run Terraform apply - the entire infrastructure updates automatically!</p>
-            </div>
-        </div>
-
-        <!-- Future Enhancements -->
-        <div class="slide">
-            <h2>🚀 Future Enhancements</h2>
-            <p style="margin-bottom: 25px; color: #555;">
-                The system is designed to be modular and extensible. Here's what's planned:
-            </p>
-            
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon">💬</div>
-                    <h3>Slack Integration</h3>
-                    <p>Automatic alerts for recurring offenders and real-time incident notifications</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">📊</div>
-                    <h3>Analytics Dashboard</h3>
-                    <p>Visual reports on incident trends, device reliability, and performance metrics</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">👥</div>
-                    <h3>Partner Dashboards</h3>
-                    <p>Separate views for partners to see incidents related to their sites</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">📱</div>
-                    <h3>Mobile App</h3>
-                    <p>Native mobile app for field technicians to log incidents on-site</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">🔔</div>
-                    <h3>SMS/Email Alerts</h3>
-                    <p>Automated notifications via AWS SNS for critical incidents</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">🤖</div>
-                    <h3>AI Analysis</h3>
-                    <p>Machine learning to predict device failures and suggest preventive actions</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- How to Use -->
-        <div class="slide">
-            <h2>💡 How to Use the Application</h2>
-            
-            <h3>📝 Logging a New Incident</h3>
-            <ol style="margin: 15px 0 25px 20px; line-height: 1.8;">
-                <li>Navigate to the application URL</li>
-                <li>Fill out the incident form with all relevant details</li>
-                <li>Ensure Network ID includes both network and serial (format: "1164 | 220S101F4")</li>
-                <li>Include Freshservice ticket number for tracking</li>
-                <li>Click Submit - the incident is immediately stored</li>
-            </ol>
-            
-            <h3>🔍 Checking for Recurring Issues</h3>
-            <ol style="margin: 15px 0 25px 20px; line-height: 1.8;">
-                <li>Scroll to "Recurring Offender Check" section</li>
-                <li>Enter the device serial number (e.g., "220S101F4")</li>
-                <li>Click Search to see incident count for past 12 months</li>
-                <li>Review the list of recent incidents for patterns</li>
-            </ol>
-            
-            <h3>📊 Viewing and Exporting Data</h3>
-            <ol style="margin: 15px 0 25px 20px; line-height: 1.8;">
-                <li>Scroll to "All Incidents Logged" to see recent entries</li>
-                <li>Click "📤 Export CSV" to download complete incident history</li>
-                <li>Use exported data for analysis, reporting, or importing into other tools</li>
-            </ol>
-            
-            <div class="warning">
-                <h3>💭 Pro Tips</h3>
-                <ul style="margin: 10px 0 0 20px;">
-                    <li>Always include detailed resolution notes - future you will thank you!</li>
-                    <li>Use consistent naming for partners and sites to improve search/filtering</li>
-                    <li>Check for recurring issues before starting troubleshooting</li>
-                    <li>Export data regularly for backup and analysis</li>
-                </ul>
-            </div>
-        </div>
-
-        <!-- Contact & Support -->
-        <div class="slide">
-            <h2>🆘 Questions & Support</h2>
-            
-            <div style="text-align: center; margin: 40px 0;">
-                <p style="font-size: 1.3em; color: #555; margin-bottom: 30px;">
-                    <strong>Application built and maintained by:</strong>
-                </p>
-                <p style="font-size: 1.5em; color: #003e73; font-weight: bold;">
-                    Salomon Fritz Lubin
-                </p>
-                <p style="font-size: 1.1em; color: #888; margin-top: 10px;">
-                    For Adaptiv Networks Internal Operations
-                </p>
-            </div>
-            
-            <div class="security-info">
-                <h3>🔧 Technical Issues</h3>
-                <p>For technical problems, feature requests, or questions about the application:</p>
-                <ul style="margin: 10px 0 0 20px;">
-                    <li>Contact Salomon directly</li>
-                    <li>Check if it's a network connectivity issue first</li>
-                    <li>Note any error messages you see</li>
-                    <li>Mention what you were trying to do when the issue occurred</li>
-                </ul>
-            </div>
-            
-            <div class="warning">
-                <h3>🌐 Application URLs</h3>
-                <p><strong>Production:</strong> https://adaptiv-device-tracker.ca</p>
-                <p><strong>Fallback S3 URL:</strong> Available in Terraform outputs if needed</p>
-            </div>
-        </div>
-    </div>
-</body>
-</html>
+Built by Salomon Fritz Lubin for internal operational use at Adaptiv Networks.
