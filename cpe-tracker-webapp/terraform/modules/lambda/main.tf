@@ -52,10 +52,8 @@ resource "aws_iam_policy_attachment" "lambda_dynamodb" {
   policy_arn = aws_iam_policy.dynamodb_access.arn
 }
 
-# Build Lambda deployment packages
 resource "null_resource" "lambda_build" {
   triggers = {
-    # Rebuild if any Python file changes
     create_incident_hash   = filemd5("${path.module}/../../backend/create_incident/handler.py")
     get_recurring_hash     = filemd5("${path.module}/../../backend/get_recurring/handler.py")
     get_all_incidents_hash = filemd5("${path.module}/../../backend/get_all_incidents/handler.py")
@@ -63,7 +61,7 @@ resource "null_resource" "lambda_build" {
   }
 
   provisioner "local-exec" {
-    command = "chmod +x ./build.sh && ./build.sh"
+    command = "chmod +x ./build.sh && ./build.sh"  # ← Make executable first
     working_dir = path.module
   }
 }
