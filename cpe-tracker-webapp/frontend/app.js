@@ -1,5 +1,5 @@
 // Configuration - this will be updated after Terraform deployment
-const API_BASE_URL = '${API_ENDPOINT_PLACEHOLDER}';
+const API_BASE_URL = "${API_ENDPOINT_PLACEHOLDER}";
 
 const form = document.getElementById("incidentForm");
 
@@ -14,7 +14,7 @@ form.addEventListener("submit", async (e) => {
   });
 
   try {
-    const response = await fetch(`${API_BASE_URL}/incident`, {
+    const response = await fetch(`$${API_BASE_URL}/incident`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data)
@@ -26,10 +26,10 @@ form.addEventListener("submit", async (e) => {
       await loadIncidentTable(); // Refresh the table
     } else {
       const errorData = await response.json();
-      alert(`Error: ${errorData.error || 'Something went wrong'}`);
+      alert(`Error: $${errorData.error || "Something went wrong"}`);
     }
   } catch (error) {
-    console.error('Submit error:', error);
+    console.error("Submit error:", error);
     alert("Network error. Please try again.");
   }
 });
@@ -42,44 +42,44 @@ async function lookupSerial() {
   if (!serial) return alert("Please enter a serial number");
 
   try {
-    const res = await fetch(`${API_BASE_URL}/recurring?serial_number=${encodeURIComponent(serial)}`);
+    const res = await fetch(`$${API_BASE_URL}/recurring?serial_number=$${encodeURIComponent(serial)}`);
     const data = await res.json();
 
     if (res.ok) {
       const resultBox = document.getElementById("lookupResult");
       resultBox.innerHTML = `
-        <strong>${data.serial_number}</strong> has 
-        <strong>${data.incident_count}</strong> incidents in the past 12 months.
+        <strong>${"${data.serial_number}"}</strong> has 
+        <strong>${"${data.incident_count}"}</strong> incidents in the past 12 months.
       `;
     } else {
-      alert(`Error: ${data.error || 'Failed to lookup serial'}`);
+      alert(`Error: $${data.error || "Failed to lookup serial"}`);
     }
   } catch (error) {
-    console.error('Lookup error:', error);
+    console.error("Lookup error:", error);
     alert("Network error during lookup.");
   }
 }
 
 async function loadIncidentTable() {
   try {
-    const res = await fetch(`${API_BASE_URL}/incidents`);
+    const res = await fetch(`$${API_BASE_URL}/incidents`);
     const data = await res.json();
 
     if (res.ok) {
       const container = document.getElementById("incidentTableContainer");
       
       if (data.length === 0) {
-        container.innerHTML = '<p>No incidents found.</p>';
+        container.innerHTML = "<p>No incidents found.</p>";
         return;
       }
 
       const rows = data.map(i => `
         <tr>
-          <td>${i.serial_number || 'N/A'}</td>
-          <td>${i.detected_at || 'N/A'}</td>
-          <td>${i.resolved_at || 'N/A'}</td>
-          <td>${i.cause || 'N/A'}</td>
-          <td>${i.resolved_by || 'N/A'}</td>
+          <td>${"${i.serial_number || 'N/A'}"}</td>
+          <td>${"${i.detected_at || 'N/A'}"}</td>
+          <td>${"${i.resolved_at || 'N/A'}"}</td>
+          <td>${"${i.cause || 'N/A'}"}</td>
+          <td>${"${i.resolved_by || 'N/A'}"}</td>
         </tr>
       `).join("");
 
@@ -94,21 +94,21 @@ async function loadIncidentTable() {
               <th>Resolved By</th>
             </tr>
           </thead>
-          <tbody>${rows}</tbody>
+          <tbody>${"${rows}"}</tbody>
         </table>
       `;
     } else {
-      console.error('Failed to load incidents:', data);
+      console.error("Failed to load incidents:", data);
       document.getElementById("incidentTableContainer").innerHTML = 
-        '<p>Error loading incidents. Please refresh the page.</p>';
+        "<p>Error loading incidents. Please refresh the page.</p>";
     }
   } catch (error) {
-    console.error('Load table error:', error);
+    console.error("Load table error:", error);
     document.getElementById("incidentTableContainer").innerHTML = 
-      '<p>Network error loading incidents.</p>';
+      "<p>Network error loading incidents.</p>";
   }
 }
 
 function exportCSV() {
-  window.open(`${API_BASE_URL}/export-csv`, "_blank");
+  window.open(`$${API_BASE_URL}/export-csv`, "_blank");
 }
