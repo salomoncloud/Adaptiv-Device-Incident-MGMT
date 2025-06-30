@@ -62,13 +62,13 @@ resource "aws_s3_object" "style_css" {
   etag         = filemd5("${path.root}/../frontend/style.css")
 }
 
-# Upload app.js with API endpoint replacement
-# data "template_file" "app_js" {
-#  template = file("${path.root}/../frontend/app.js")
- # vars = {
-  #  API_ENDPOINT_PLACEHOLDER = var.api_endpoint
- # }
-#}
+Upload app.js with API endpoint replacement
+data "template_file" "app_js" {
+  template = file("${path.root}/../frontend/app.js")
+  vars = {
+    API_ENDPOINT_PLACEHOLDER = var.api_endpoint
+ }
+}
 
 resource "aws_s3_object" "app_js" {
   bucket       = aws_s3_bucket.frontend.id
