@@ -1,23 +1,23 @@
 variable "aws_access_key_id" {
-type = string
+  type = string
 }
 
 variable "aws_secret_access_key" {
-type = string
+  type = string
 }
 
 variable "aws_region" {
-type = string
-default = "ca-central-1"
+  type = string
+  default = "ca-central-1"
 }
 
 variable "shared_username" {
-type = string
-default = "Adaptiv_user"
+  type = string
+  default = "Adaptiv_user"
 }
 
 variable "shared_password" {
-type = string
+  type = string
 }
 
 variable "devices_table_name" {
@@ -26,28 +26,34 @@ variable "devices_table_name" {
 }
 
 variable "incidents_table_name" {
-type    = string
-default = "cpe_incidents"
+  type    = string
+  default = "cpe_incidents"
 }
 
 variable "incident_function_name" {
-type    = string
-default = "create-incident-handler"
+  type    = string
+  default = "create-incident-handler"
 }
 
 variable "recurring_function_name" {
-type    = string
-default = "recurring-offender-checker"
+  type    = string
+  default = "recurring-offender-checker"
 }
 
 variable "frontend_bucket_name" {
-type    = string
-default = "cpe-tracker-frontend-bucket"
+  type    = string
+  default = "cpe-tracker-frontend-bucket"
 }
 
 variable "api_name" {
-type    = string
-default = "cpe-tracker-api"
+  type    = string
+  default = "cpe-tracker-api"
+}
+
+variable "domain_name" {
+  type        = string
+  description = "Domain name for the website"
+  default     = "adaptiv-device-tracker.ca"
 }
 
 variable "slack_token" {
