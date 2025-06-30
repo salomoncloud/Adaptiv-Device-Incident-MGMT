@@ -49,3 +49,8 @@ variable "api_name" {
 type    = string
 default = "cpe-tracker-api"
 }
+
+variable "slack_token" {
+  type        = string
+  description = "Slack bot token for notifications (eventual addition)"
+}
