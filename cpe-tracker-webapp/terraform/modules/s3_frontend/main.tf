@@ -62,7 +62,7 @@ resource "aws_s3_object" "style_css" {
   etag         = filemd5("${path.root}/../frontend/style.css")
 }
 
-Upload app.js with API endpoint replacement
+# Upload app.js with API endpoint replacement
 data "template_file" "app_js" {
   template = file("${path.root}/../frontend/app.js")
   vars = {
