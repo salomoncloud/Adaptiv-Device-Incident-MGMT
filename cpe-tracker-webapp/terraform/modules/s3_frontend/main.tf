@@ -55,25 +55,22 @@ resource "aws_s3_object" "index_html" {
 }
 
 resource "aws_s3_object" "style_css" {
-  bucket       = aws_s3_bucket.frontend.id
-  key          = "style.css"
-  source       = "${path.root}/../frontend/style.css"
+  bucket = aws_s3_bucket.frontend.id
+  key    = "style.css"
+  source = "${path.root}/../frontend/style.css"
   content_type = "text/css"
   etag         = filemd5("${path.root}/../frontend/style.css")
 }
 
-# Upload app.js with API endpoint replacement
-data "template_file" "app_js" {
-  template = file("${path.root}/../frontend/app.js")
-  vars = {
-    API_ENDPOINT_PLACEHOLDER = var.api_endpoint
- }
-}
-
+# Upload app.js with API endpoint replacement using templatefile function
 resource "aws_s3_object" "app_js" {
   bucket       = aws_s3_bucket.frontend.id
   key          = "app.js"
-  content      = data.template_file.app_js.rendered
+  content      = templatefile("${path.root}/../frontend/app.js", {
+    API_ENDPOINT_PLACEHOLDER = var.api_endpoint
+  })
   content_type = "application/javascript"
-  etag         = md5(data.template_file.app_js.rendered)
+  etag         = md5(templatefile("${path.root}/../frontend/app.js", {
+    API_ENDPOINT_PLACEHOLDER = var.api_endpoint
+  }))
 }
