@@ -9,28 +9,8 @@ resource "aws_s3_bucket" "frontend" {
   force_destroy = true
 }
 
-# Update bucket policy to allow CloudFront OAC instead of public access
-resource "aws_s3_bucket_policy" "frontend" {
-  bucket = aws_s3_bucket.frontend.id
-
-  policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [{
-      Sid       = "AllowCloudFrontServicePrincipal",
-      Effect    = "Allow",
-      Principal = {
-        Service = "cloudfront.amazonaws.com"
-      },
-      Action   = "s3:GetObject",
-      Resource = "${aws_s3_bucket.frontend.arn}/*",
-      Condition = {
-        StringEquals = {
-          "AWS:SourceArn" = var.cloudfront_distribution_arn
-        }
-      }
-    }]
-  })
-}
+# Remove the bucket policy for now - CloudFront will add it after creation
+# The bucket policy will be managed by CloudFront module instead
 
 # Remove public access block since we're using CloudFront OAC
 resource "aws_s3_bucket_public_access_block" "frontend" {
@@ -65,7 +45,7 @@ resource "aws_s3_object" "index_html" {
 }
 
 resource "aws_s3_object" "style_css" {
-  bucket       = aws_s3_bucket.frontend.id
+  bucket = aws_s3_bucket.frontend.id
   key          = "style.css"
   source       = "${path.root}/../frontend/style.css"
   content_type = "text/css"
