@@ -3,7 +3,7 @@ set -e
 
 echo "Building Lambda packages from Terraform..."
 
-# Navigate to project root (go up 3 levels: lambda -> modules -> terraform -> root)
+# Navigate to project root from terraform/modules/lambda
 cd "$(dirname "$0")/../../.."
 
 echo "Current directory: $(pwd)"
