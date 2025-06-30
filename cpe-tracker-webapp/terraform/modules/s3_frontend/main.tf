@@ -44,3 +44,36 @@ resource "aws_s3_bucket_website_configuration" "frontend" {
     key = "index.html"
   }
 }
+
+# Upload frontend files
+resource "aws_s3_object" "index_html" {
+  bucket       = aws_s3_bucket.frontend.id
+  key          = "index.html"
+  source       = "${path.module}/../../frontend/index.html"
+  content_type = "text/html"
+  etag         = filemd5("${path.module}/../../frontend/index.html")
+}
+
+resource "aws_s3_object" "style_css" {
+  bucket       = aws_s3_bucket.frontend.id
+  key          = "style.css"
+  source       = "${path.module}/../../frontend/style.css"
+  content_type = "text/css"
+  etag         = filemd5("${path.module}/../../frontend/style.css")
+}
+
+# Upload app.js with API endpoint replacement
+data "template_file" "app_js" {
+  template = file("${path.module}/../../frontend/app.js")
+  vars = {
+    API_ENDPOINT_PLACEHOLDER = var.api_endpoint
+  }
+}
+
+resource "aws_s3_object" "app_js" {
+  bucket       = aws_s3_bucket.frontend.id
+  key          = "app.js"
+  content      = data.template_file.app_js.rendered
+  content_type = "application/javascript"
+  etag         = md5(data.template_file.app_js.rendered)
+}
