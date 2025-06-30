@@ -13,6 +13,14 @@ provider "aws" {
   secret_key = var.aws_secret_access_key
 }
 
+# Additional provider for ACM certificates (CloudFront requires us-east-1)
+provider "aws" {
+  alias  = "us_east_1"
+  region = "us-east-1"
+  access_key = var.aws_access_key_id
+  secret_key = var.aws_secret_access_key
+}
+
 module "cognito" {
   source = "./modules/cognito"
   user_pool_name = "cpe-tracker-users"
@@ -55,7 +63,22 @@ module "api_gateway" {
 module "s3_frontend" {
   source = "./modules/s3_frontend"
   bucket_name = var.frontend_bucket_name
-  api_endpoint = module.api_gateway.api_endpoint  # Add this line
+  api_endpoint = module.api_gateway.api_endpoint
+  cloudfront_distribution_arn = module.cloudfront.cloudfront_distribution_arn
+}
+
+module "cloudfront" {
+  source = "./modules/cloudfront"
+  
+  domain_name = var.domain_name
+  bucket_name = var.frontend_bucket_name
+  s3_bucket_domain_name = module.s3_frontend.bucket_domain_name
+  
+  providers = {
+    aws.us_east_1 = aws.us_east_1
+  }
+  
+  depends_on = [module.s3_frontend]
 }
 
 module "eventbridge" {
