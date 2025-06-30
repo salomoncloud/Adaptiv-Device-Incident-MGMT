@@ -54,14 +54,14 @@ resource "aws_iam_policy_attachment" "lambda_dynamodb" {
 
 resource "null_resource" "lambda_build" {
   triggers = {
-    create_incident_hash   = filemd5("${path.module}/../../backend/create_incident/handler.py")
-    get_recurring_hash     = filemd5("${path.module}/../../backend/get_recurring/handler.py")
-    get_all_incidents_hash = filemd5("${path.module}/../../backend/get_all_incidents/handler.py")
-    export_csv_hash        = filemd5("${path.module}/../../backend/export_csv/handler.py")
+    create_incident_hash   = filemd5("${path.root}/../backend/create_incident/handler.py")
+    get_recurring_hash     = filemd5("${path.root}/../backend/get_recurring/handler.py")
+    get_all_incidents_hash = filemd5("${path.root}/../backend/get_all_incidents/handler.py")
+    export_csv_hash        = filemd5("${path.root}/../backend/export_csv/handler.py")
   }
 
   provisioner "local-exec" {
-    command = "chmod +x ./build.sh && ./build.sh"  # ← Make executable first
+    command = "chmod +x ./build.sh && ./build.sh"
     working_dir = path.module
   }
 }
