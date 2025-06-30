@@ -84,7 +84,8 @@ resource "aws_lambda_function" "create_incident" {
     }
   }
 
-  source_code_hash = filebase64sha256("${path.root}/../backend/create_incident.zip")
+  # Use the trigger hash instead of file hash since file doesn't exist at plan time
+  source_code_hash = null_resource.lambda_build.triggers.create_incident_hash
 }
 
 # Lambda function: Get Recurring Incidents
@@ -105,7 +106,7 @@ resource "aws_lambda_function" "recurring_offender" {
     }
   }
 
-  source_code_hash = filebase64sha256("${path.root}/../backend/get_recurring.zip")
+  source_code_hash = null_resource.lambda_build.triggers.get_recurring_hash
 }
 
 # Lambda function: Get All Incidents
@@ -125,7 +126,7 @@ resource "aws_lambda_function" "get_all_incidents" {
     }
   }
 
-  source_code_hash = filebase64sha256("${path.root}/../backend/get_all_incidents.zip")
+  source_code_hash = null_resource.lambda_build.triggers.get_all_incidents_hash
 }
 
 # Lambda function: Export CSV
@@ -145,5 +146,5 @@ resource "aws_lambda_function" "export_csv" {
     }
   }
 
-  source_code_hash = filebase64sha256("${path.root}/../backend/export_csv.zip")
+  source_code_hash = null_resource.lambda_build.triggers.export_csv_hash
 }
