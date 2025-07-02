@@ -94,6 +94,9 @@ By addressing the above, the Adaptiv DIM app will go from a mostly-functional pr
 
 In summary, the Adaptiv Device Incident Management application is a modern, serverless web app aimed at making the life of support engineers easier through a centralized incident log. It uses a static **React-less** frontend (just HTML/JS) for simplicity, and leverages powerful AWS managed services on the backend – all glued together by Terraform Cloud-managed infrastructure as code.
 
+for a simpler summary - 
+https://salomoncloud.github.io/Adaptiv-Device-Incident-MGMT/
+
 **Key takeaways to highlight to the team lead:**
 
 * We’ve built a **scalable, serverless architecture**: no servers to manage, and each component (S3, CloudFront, Lambda, DynamoDB) scales automatically. This means the solution can handle increasing load with minimal ops work – ideal for a small team.
@@ -101,3 +104,45 @@ In summary, the Adaptiv Device Incident Management application is a modern, serv
 * The app’s design is modular: the front-end, backend functions, and infrastructure modules are loosely coupled. This makes it easier to develop and maintain. For instance, we can update the front-end look or tweak a Lambda function’s logic without affecting other parts, as long as the API contract stays the same.
 * **Current status:** The skeleton is in place – front-end is running, and backend functions exist – but we need to finish wiring things up (database, API endpoints). These are well-defined tasks that we can tackle next. Once done, we’ll have a fully operational incident tracker that the support team can use daily.
 * **Big-picture benefits:** Beyond the immediate functionality, this project sets up a pattern for future internal tools at Adaptiv. By logging incidents, we build a knowledge base that can inform product improvements. And by using IaC and cloud services, we ensure those tools are reliable and easy to iterate on. It’s a small investment now for a lot of agility later.
+
+## STEP-BY-STEP GUIDE TO IMPLEMENTATION
+
+**Connecting Terraform Cloud, AWS, and Github**
+
+Navigate to AWS and navigate to security credentials. 
+
+![image](https://github.com/user-attachments/assets/a7ceb17d-04f5-4b1b-a346-0f1498c505b7)
+
+Create and Save an Access key (the secret and its ID - store this securely and save it as this will connect your AWS account to terraform).
+
+Next, go to the HCP Terraform login page and either create an account or login (sign in using your Github account when prompted).
+
+![image](https://github.com/user-attachments/assets/1fc5a045-4c1f-4e19-91eb-d59114b68116)
+
+Create a Terraform organization (there are business plans and the free tier personal plan - make sure name is unique).
+
+![image](https://github.com/user-attachments/assets/5cbf06ed-a7fc-4a99-9da0-b9196d43288b)
+
+After you have an organization created, create a project.
+
+![image](https://github.com/user-attachments/assets/5fba4735-bdc5-4f1e-96d1-168d9739a393)
+![image](https://github.com/user-attachments/assets/8eb48b9f-c8c6-4823-9140-fec69edb4da8)
+
+Once created, click on the "New" dropdown menu and create a workspace, name this accordingly.
+
+![image](https://github.com/user-attachments/assets/33cf805b-4b75-4d14-859d-46c4d26cb904)
+
+You will need to select **Version Control Workflow**, followed by **Github App**, select your repo, and create.
+
+![image](https://github.com/user-attachments/assets/918a9e45-047f-4e11-be1b-1cc954f30df0)
+
+Once everything here is set up, you will need to add the access key and ID as shown below to the variables section in you're Terraform workspace settings.
+
+![image](https://github.com/user-attachments/assets/fe9f8b8e-5cd0-4a90-aeca-784e6fcd3d4f)
+
+The variables need to be marked as sensitive, and as terraform environment variables. 
+
+![image](https://github.com/user-attachments/assets/b1f1d838-81e2-47bf-be83-cf81feedb3f7)
+
+Once this is all complete, run a test **plan run** to validate that you see a successful plan. 
+Common issues in this step include keys that were not properly pasted (errors in pasting) or the directory structure not being properly indicated for Terraform (navigate to General settings in Terraform cloud and scroll down).
