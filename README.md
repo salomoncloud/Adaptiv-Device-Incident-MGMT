@@ -145,4 +145,7 @@ The variables need to be marked as sensitive, and as terraform environment varia
 ![image](https://github.com/user-attachments/assets/b1f1d838-81e2-47bf-be83-cf81feedb3f7)
 
 Once this is all complete, run a test **plan run** to validate that you see a successful plan. 
+
+![image](https://github.com/user-attachments/assets/ba5b85f6-9218-418d-8e49-5041ac22654e)
+
 Common issues in this step include keys that were not properly pasted (errors in pasting) or the directory structure not being properly indicated for Terraform (navigate to General settings in Terraform cloud and scroll down).
