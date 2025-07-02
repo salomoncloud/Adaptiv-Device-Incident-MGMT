@@ -97,14 +97,6 @@ In summary, the Adaptiv Device Incident Management application is a modern, serv
 for a simpler summary - 
 https://salomoncloud.github.io/Adaptiv-Device-Incident-MGMT/
 
-**Key takeaways to highlight to the team lead:**
-
-* We’ve built a **scalable, serverless architecture**: no servers to manage, and each component (S3, CloudFront, Lambda, DynamoDB) scales automatically. This means the solution can handle increasing load with minimal ops work – ideal for a small team.
-* **Terraform & Terraform Cloud** are integral to how we deploy this app. Every AWS resource is defined in code, bringing consistency and easy collaboration. Terraform Cloud handles remote state and team access, which **improves our productivity and reduces risk** by avoiding manual errors. Adaptiv is adopting best practices akin to much larger organizations, which will pay off as we grow.
-* The app’s design is modular: the front-end, backend functions, and infrastructure modules are loosely coupled. This makes it easier to develop and maintain. For instance, we can update the front-end look or tweak a Lambda function’s logic without affecting other parts, as long as the API contract stays the same.
-* **Current status:** The skeleton is in place – front-end is running, and backend functions exist – but we need to finish wiring things up (database, API endpoints). These are well-defined tasks that we can tackle next. Once done, we’ll have a fully operational incident tracker that the support team can use daily.
-* **Big-picture benefits:** Beyond the immediate functionality, this project sets up a pattern for future internal tools at Adaptiv. By logging incidents, we build a knowledge base that can inform product improvements. And by using IaC and cloud services, we ensure those tools are reliable and easy to iterate on. It’s a small investment now for a lot of agility later.
-
 ## STEP-BY-STEP GUIDE TO IMPLEMENTATION
 
 **Connecting Terraform Cloud, AWS, and Github**
