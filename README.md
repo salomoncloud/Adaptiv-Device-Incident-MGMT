@@ -1,8 +1,11 @@
 # Adaptiv Device Incident Management – Architecture & Implementation
 
 **The Adaptiv Device Incident Management (DIM) app** is designed as a digital logbook for support engineers to track device-related incidents over time. The goal is to easily record each incident, then later review the history for recurring issues that might need a deeper fix. This document provides a high-level overview of how the app is built – covering its web front-end, AWS cloud backend, and the Terraform Cloud infrastructure-as-code setup – as well as what’s currently missing and next steps for completion. The focus is on understanding the architecture and promoting good DevOps practices (like using Terraform Cloud for Infrastructure as Code) that are especially beneficial for a small company like Adaptiv.
+
 ![image](https://github.com/user-attachments/assets/6f81b32f-ae3c-47a4-a877-e508f83f371c)
+
 ![image](https://github.com/user-attachments/assets/d3b46731-f98a-47f3-930b-67e7a3a7367e)
+
 ## 🎯 App Purpose and Key Features
 
 * **Incident Logbook:** The core function is to allow support engineers to create incident entries for devices. Each entry might include details like device identifier, date/time, issue description, resolution status, etc. Over time, this builds a knowledge base of incidents.
